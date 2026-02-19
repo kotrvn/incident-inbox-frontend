@@ -115,12 +115,11 @@ export const IncidentsPage = () => {
       setSortField(field);
       setSortOrder('asc');
     }
-    setPage(1);
   };
 
   useEffect(() => {
     setPage(1);
-  }, [search, statusFilter, priorityFilter, sortField, sortOrder]);
+  }, [search, statusFilter, priorityFilter]);
 
   useEffect(() => {
     if (data?.pagination && page > data.pagination.totalPages) {
@@ -189,9 +188,6 @@ export const IncidentsPage = () => {
       />
     );
   }
-
-  console.log('data?.pagination?.totalCount', data?.pagination);
-
 
   return (
     <Container maxW="container.xl">

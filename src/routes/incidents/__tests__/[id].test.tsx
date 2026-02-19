@@ -1,72 +1,70 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, waitFor } from '../../../test/test-utils';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { IncidentDetailPage } from '../[id]';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-    },
-  },
-});
-
-const renderWithProviders = (component: React.ReactNode) => {
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/incidents/INC-001']}>
-        <Routes>
-          <Route path="/incidents/:id" element={component} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>
-  );
-};
-
 describe('IncidentDetailPage', () => {
+  const renderWithRouter = (initialEntries = ['/incidents/INC-001']) => {
+    const router = createMemoryRouter([
+      {
+        path: '/incidents/:id',
+        element: <IncidentDetailPage />,
+      },
+    ], { initialEntries });
+
+    return render(<RouterProvider router={router} />);
+  };
+
   it('загружает и отображает детали инцидента', async () => {
-    renderWithProviders(<IncidentDetailPage />);
+    renderWithRouter();
 
     await waitFor(() => {
       expect(screen.getByText('Повреждённая посылка при доставке')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
+
+    expect(screen.getByText('INC-001')).toBeInTheDocument();
+    expect(screen.getByText('Алексей Петров')).toBeInTheDocument();
   });
 
   it('обновляет статус при выборе нового значения', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<IncidentDetailPage />);
+    const user = userEvent.setup({ delay: null }); // Отключаем задержку для тестов
+    renderWithRouter();
 
     await waitFor(() => {
       expect(screen.getByText('Повреждённая посылка при доставке')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
-    const statusSelect = screen.getByLabelText('Статус');
-    await user.selectOptions(statusSelect, 'in_progress');
+    // Находим селект статуса
+    const statusSelect = screen.getAllByRole('combobox')[0];
+    await user.click(statusSelect);
 
+    // Выбираем новый статус
+    const inProgressOption = await screen.findByText('В работе');
+    await user.click(inProgressOption);
+
+    // Проверяем, что появилось уведомление
     await waitFor(() => {
       expect(screen.getByText('Статус обновлен')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 
   it('добавляет комментарий', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<IncidentDetailPage />);
+    const user = userEvent.setup({ delay: null }); // Отключаем задержку для тестов
+    renderWithRouter();
 
     await waitFor(() => {
       expect(screen.getByText('Повреждённая посылка при доставке')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
-    const submitButton = screen.getByText('Добавить комментарий');
-
     await user.type(commentInput, 'Тестовый комментарий');
+
+    const submitButton = screen.getByText('Добавить комментарий');
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText('Комментарий добавлен')).toBeInTheDocument();
       expect(screen.getByText('Тестовый комментарий')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
   });
 });

@@ -9,9 +9,10 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
     "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test": "bun run test-runner.js",
+    "test:watch": "bun run test-runner.js --watch",
+    "test:ui": "bun run test-runner.js --ui",
+    "test:coverage": "bun run test-runner.js --coverage"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.33.0",
@@ -19,7 +20,9 @@
     "@emotion/styled": "^11.14.1",
     "@tanstack/react-query": "^5.90.21",
     "@tanstack/react-query-devtools": "^5.91.3",
+    "@types/jsdom": "^27.0.0",
     "framer-motion": "^12.34.2",
+    "jsdom": "^28.1.0",
     "lucide-react": "^0.574.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -44,7 +47,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
-    "jsdom": "^28.1.0",
     "msw": "^2.12.10",
     "prettier": "^3.8.1",
     "typescript": "~5.9.3",

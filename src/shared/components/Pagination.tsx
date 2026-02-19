@@ -33,9 +33,6 @@ export const Pagination = ({
   const safeTotalPages = totalPages || 1;
   const safeTotalItems = totalItems || 0;
   const safePageSize = pageSize || 10;
-
-  console.log('Pagination render:', { safeCurrentPage, safeTotalPages, safeTotalItems, safePageSize });
-
   const startItem = safeTotalItems === 0 ? 0 : (safeCurrentPage - 1) * safePageSize + 1;
   const endItem = Math.min(safeCurrentPage * safePageSize, safeTotalItems);
 
