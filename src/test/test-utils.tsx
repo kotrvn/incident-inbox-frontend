@@ -1,36 +1,57 @@
 import React from 'react';
 import { render as rtlRender, RenderOptions } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      staleTime: 0,
-    },
-  },
-});
-
-interface WrapperProps {
-  children: React.ReactNode;
+interface RouteConfig {
+  path: string;
+  element: React.ReactElement;
 }
 
-const TestWrapper = ({ children }: WrapperProps) => {
-  return (
+interface CustomRenderOptions {
+  initialEntries?: string[];
+  path?: string;
+  routes?: RouteConfig[];
+}
+
+function render(ui: React.ReactElement, options?: CustomRenderOptions) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 0,
+      },
+    },
+  });
+
+  const { path, routes, initialEntries = ['/'] } = options || {};
+
+  return rtlRender(
     <ChakraProvider value={defaultSystem}>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <MemoryRouter initialEntries={initialEntries}>
+          {routes ? (
+            <Routes>
+              {routes.map((route) => (
+                <Route key={route.path} path={route.path} element={route.element} />
+              ))}
+            </Routes>
+          ) : path ? (
+            <Routes>
+              <Route path={path} element={ui} />
+            </Routes>
+          ) : (
+            // ✅ Даже без path — оборачиваем в Routes/Route
+            // чтобы useSearchParams() работал корректно
+            <Routes>
+              <Route path="*" element={ui} />
+            </Routes>
+          )}
+        </MemoryRouter>
       </QueryClientProvider>
     </ChakraProvider>
   );
-};
-
-function render(ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
-  return rtlRender(ui, { wrapper: TestWrapper, ...options });
 }
 
 export * from '@testing-library/react';
