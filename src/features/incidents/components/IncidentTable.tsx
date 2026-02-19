@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   Box,
@@ -38,6 +38,10 @@ export const IncidentTable = ({
 }: IncidentTableProps) => {
   const [localSelected, setLocalSelected] = useState<string[]>(selectedIds);
 
+  useEffect(() => {
+    setLocalSelected(selectedIds);
+  }, [selectedIds]);
+
   const renderSortIcon = (field: string) => {
     if (sortField !== field) return null;
     return sortOrder === 'asc' ?
@@ -51,14 +55,16 @@ export const IncidentTable = ({
     }
   };
 
-  const handleSelectAll = (e: { checked: boolean }) => {
-    const newSelected = e.checked ? incidents.map(i => i.id) : [];
+  const handleSelectAll = (details: { checked: boolean | string }) => {
+    const isChecked = typeof details.checked === 'string' ? details.checked === 'true' : details.checked;
+    const newSelected = isChecked ? incidents.map(i => i.id) : [];
     setLocalSelected(newSelected);
     onSelectionChange?.(newSelected);
   };
 
-  const handleSelectOne = (id: string, checked: boolean) => {
-    const newSelected = checked
+  const handleSelectOne = (id: string, details: { checked: boolean | string }) => {
+    const isChecked = typeof details.checked === 'string' ? details.checked === 'true' : details.checked;
+    const newSelected = isChecked
       ? [...localSelected, id]
       : localSelected.filter(selectedId => selectedId !== id);
 
@@ -78,7 +84,7 @@ export const IncidentTable = ({
               <Table.ColumnHeader width="40px">
                 <Checkbox.Root
                   checked={isAllSelected}
-                  indeterminate={isIndeterminate}
+                  data-indeterminate={isIndeterminate ? true : undefined}
                   onCheckedChange={handleSelectAll}
                 >
                   <Checkbox.HiddenInput />
@@ -137,7 +143,7 @@ export const IncidentTable = ({
                   <Table.Cell>
                     <Checkbox.Root
                       checked={isSelected}
-                      onCheckedChange={(e) => handleSelectOne(incident.id, e.checked as boolean)}
+                      onCheckedChange={(details) => handleSelectOne(incident.id, details)}
                     >
                       <Checkbox.HiddenInput />
                       <Checkbox.Control />

@@ -2,7 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Incident, UpdateIncidentRequest, IncidentsResponse } from '../../../types';
 
 const API_BASE = '/api';
-
 interface UseIncidentsParams {
   page?: number;
   limit?: number;
@@ -14,16 +13,27 @@ interface UseIncidentsParams {
 }
 
 export const useIncidents = (params: UseIncidentsParams = {}) => {
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    status = '',
+    priority = '',
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+  } = params;
+
   const searchParams = new URLSearchParams();
-  
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== '') {
-      searchParams.append(key, String(value));
-    }
-  });
+  searchParams.append('page', String(page));
+  searchParams.append('limit', String(limit));
+  if (search) searchParams.append('search', search);
+  if (status) searchParams.append('status', status);
+  if (priority) searchParams.append('priority', priority);
+  searchParams.append('sortBy', sortBy);
+  searchParams.append('sortOrder', sortOrder);
 
   return useQuery<IncidentsResponse>({
-    queryKey: ['incidents', params],
+    queryKey: ['incidents', { page, limit, search, status, priority, sortBy, sortOrder }],
     queryFn: () =>
       fetch(`${API_BASE}/incidents?${searchParams.toString()}`).then((res) => {
         if (!res.ok) {
@@ -44,7 +54,7 @@ export const useIncident = (id: string) => {
       return res.json();
     }),
     enabled: !!id,
-    retry: false, // Не ретраить 404
+    retry: false,
   });
 };
 
@@ -62,7 +72,7 @@ export const useUpdateIncident = () => {
         return res.json();
       }),
     
-    // Оптимистичное обновление
+
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: ['incident', id] });
       
@@ -78,7 +88,6 @@ export const useUpdateIncident = () => {
     },
     
     onError: (err, { id }, context) => {
-      // Откат при ошибке
       queryClient.setQueryData(['incident', id], context?.previousIncident);
     },
     

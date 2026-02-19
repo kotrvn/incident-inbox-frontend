@@ -2,10 +2,13 @@ import {
   Box,
   HStack,
   Button,
-  Menu,
   Badge,
+  Select as ChakraSelect,
+  Field,
   Portal,
-  Text,
+  createListCollection,
+  Icon,
+  Flex,
 } from '@chakra-ui/react';
 import { IncidentStatus, IncidentPriority } from '../../../types';
 import { STATUS_LABELS, PRIORITY_LABELS } from '../../../utils/constants';
@@ -18,6 +21,20 @@ interface BulkActionBarProps {
   onClearSelection: () => void;
   isLoading?: boolean;
 }
+
+const statusCollection = createListCollection({
+  items: Object.entries(STATUS_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  })),
+});
+
+const priorityCollection = createListCollection({
+  items: Object.entries(PRIORITY_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  })),
+});
 
 export const BulkActionBar = ({
   selectedCount,
@@ -32,8 +49,9 @@ export const BulkActionBar = ({
     <Box
       position="sticky"
       bottom={4}
-      bg="blue.500"
-      color="white"
+      bg="white"
+      borderWidth="1px"
+      borderColor="gray.200"
       p={4}
       borderRadius="lg"
       shadow="lg"
@@ -41,68 +59,71 @@ export const BulkActionBar = ({
     >
       <HStack justify="space-between" wrap="wrap" gap={4}>
         <HStack gap={4}>
-          <Badge colorPalette="white" px={3} py={1} fontSize="md" rounded="full">
+          <Badge colorPalette="blue" px={3} py={1} fontSize="md" rounded="full">
             Выбрано: {selectedCount}
           </Badge>
 
-          <Menu.Root>
-            <Menu.Trigger asChild>
-              <Button size="sm" colorPalette="whiteAlpha" loading={isLoading}>
-                <HStack gap={2}>
-                  <Text>Изменить статус</Text>
-                  <ChevronDown />
-                </HStack>
-              </Button>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  {Object.entries(STATUS_LABELS).map(([status, label]) => (
-                    <Menu.Item
-                      key={status}
-                      value={status}
-                      onClick={() => onStatusChange(status as IncidentStatus)}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
+          {/* Select для статуса */}
+          <Field.Root width="200px">
+            <ChakraSelect.Root
+              collection={statusCollection}
+              onValueChange={(e) => onStatusChange(e.value[0] as IncidentStatus)}
+              disabled={isLoading}
+            >
+              <ChakraSelect.Trigger>
+                <Flex justify="space-between" align="center" width="100%">
+                  <ChakraSelect.ValueText placeholder="Изменить статус" />
+                  <Icon color="gray.500">
+                    <ChevronDown size={16} />
+                  </Icon>
+                </Flex>
+              </ChakraSelect.Trigger>
+              <Portal>
+                <ChakraSelect.Positioner>
+                  <ChakraSelect.Content>
+                    {statusCollection.items.map((option) => (
+                      <ChakraSelect.Item item={option} key={option.value}>
+                        {option.label}
+                      </ChakraSelect.Item>
+                    ))}
+                  </ChakraSelect.Content>
+                </ChakraSelect.Positioner>
+              </Portal>
+            </ChakraSelect.Root>
+          </Field.Root>
 
-          <Menu.Root>
-            <Menu.Trigger asChild>
-              <Button
-                size="sm"
-                colorPalette="whiteAlpha"
-                loading={isLoading}
-              >
-                Изменить приоритет <ChevronDown />
-              </Button>
-            </Menu.Trigger>
-            <Portal>
-              <Menu.Positioner>
-                <Menu.Content>
-                  {Object.entries(PRIORITY_LABELS).map(([priority, label]) => (
-                    <Menu.Item
-                      key={priority}
-                      value={priority}
-                      onClick={() => onPriorityChange(priority as IncidentPriority)}
-                    >
-                      {label}
-                    </Menu.Item>
-                  ))}
-                </Menu.Content>
-              </Menu.Positioner>
-            </Portal>
-          </Menu.Root>
+          {/* Select для приоритета */}
+          <Field.Root width="200px">
+            <ChakraSelect.Root
+              collection={priorityCollection}
+              onValueChange={(e) => onPriorityChange(e.value[0] as IncidentPriority)}
+              disabled={isLoading}
+            >
+              <ChakraSelect.Trigger>
+                <Flex justify="space-between" align="center" width="100%">
+                  <ChakraSelect.ValueText placeholder="Изменить приоритет" />
+                  <Icon color="gray.500">
+                    <ChevronDown size={16} />
+                  </Icon>
+                </Flex>
+              </ChakraSelect.Trigger>
+              <Portal>
+                <ChakraSelect.Positioner>
+                  <ChakraSelect.Content>
+                    {priorityCollection.items.map((option) => (
+                      <ChakraSelect.Item item={option} key={option.value}>
+                        {option.label}
+                      </ChakraSelect.Item>
+                    ))}
+                  </ChakraSelect.Content>
+                </ChakraSelect.Positioner>
+              </Portal>
+            </ChakraSelect.Root>
+          </Field.Root>
         </HStack>
 
         <Button
-          size="sm"
-          variant="outline"
-          colorPalette="whiteAlpha"
+          colorPalette="gray"
           onClick={onClearSelection}
         >
           Очистить выбор

@@ -27,7 +27,7 @@ export const CommentList = ({ comments, isLoading }: CommentListProps) => {
   }
 
   return (
-    <VStack spacing={4} align="stretch">
+    <VStack gap={4} align="stretch">
       {comments.map((comment) => (
         <CommentItem key={comment.id} comment={comment} />
       ))}

@@ -89,7 +89,7 @@ export const IncidentDetailPage = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={6}>
+    <Container maxW="container.xl" pb={6}>
       <VStack gap={6} align="stretch">
         <HStack>
           <Button

@@ -50,3 +50,17 @@ export interface BulkUpdateRequest {
   incidentIds: string[];
   data: UpdateIncidentRequest;
 }
+
+export interface PaginationMeta {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  limit: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface IncidentsResponse {
+  incidents: Incident[];
+  pagination: PaginationMeta;
+}

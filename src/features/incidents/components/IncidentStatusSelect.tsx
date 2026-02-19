@@ -1,4 +1,5 @@
-import { Select as ChakraSelect, Field, Portal, createListCollection } from '@chakra-ui/react';
+import { Select as ChakraSelect, Field, Portal, createListCollection, Icon } from '@chakra-ui/react';
+import { ChevronDown } from 'lucide-react';
 import { IncidentStatus } from '../../../types';
 import { STATUS_LABELS } from '../../../utils/constants';
 
@@ -27,6 +28,11 @@ export const IncidentStatusSelect = ({ value, onChange, isDisabled }: IncidentSt
       >
         <ChakraSelect.Trigger>
           <ChakraSelect.ValueText />
+          <ChakraSelect.Indicator>
+            <Icon size="sm">
+              <ChevronDown />
+            </Icon>
+          </ChakraSelect.Indicator>
         </ChakraSelect.Trigger>
         <Portal>
           <ChakraSelect.Positioner>
