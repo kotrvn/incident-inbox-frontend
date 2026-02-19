@@ -45,3 +45,8 @@ export interface UpdateIncidentRequest {
   status?: IncidentStatus;
   priority?: IncidentPriority;
 }
+
+export interface BulkUpdateRequest {
+  incidentIds: string[];
+  data: UpdateIncidentRequest;
+}

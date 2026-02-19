@@ -7,12 +7,9 @@ import {
   Heading,
   Text,
   Button,
-  Divider,
-  Grid,
-  GridItem,
-  useToast,
+  Separator,
+  SimpleGrid,
 } from '@chakra-ui/react';
-import { ArrowBackIcon } from '@chakra-ui/icons';
 import { useIncident, useUpdateIncident } from '../../features/incidents/hooks/useIncidents';
 import { useComments, useAddComment } from '../../features/comments/hooks/useComments';
 import { IncidentStatusSelect } from '../../features/incidents/components/IncidentStatusSelect';
@@ -21,14 +18,15 @@ import { IncidentStatusBadge } from '../../features/incidents/components/Inciden
 import { IncidentPriorityBadge } from '../../features/incidents/components/IncidentPriorityBadge';
 import { CommentList } from '../../features/comments/components/CommentList';
 import { CommentForm } from '../../features/comments/components/CommentForm';
-import { LoadingSpinner } from '../../features/shared/components/LoadingSpinner';
-import { ErrorMessage } from '../../features/shared/components/ErrorMessage';
-import { formatDate } from '../../features/shared/utils/dateFormat';
+import { LoadingSpinner } from '../../shared/components/LoadingSpinner';
+import { ErrorMessage } from '../../shared/components/ErrorMessage';
+import { toaster } from '../../utils/toaster';
+import { formatDate } from '../../utils/dateFormat';
+import { ArrowLeft } from 'lucide-react';
 
 export const IncidentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const toast = useToast();
 
   const { data: incident, isLoading, error } = useIncident(id!);
   const { data: comments, isLoading: commentsLoading } = useComments(id!);
@@ -52,17 +50,14 @@ export const IncidentDetailPage = () => {
         id: incident.id,
         data: { status: newStatus as any },
       });
-      toast({
+      toaster.success({
         title: 'Статус обновлен',
-        status: 'success',
-        duration: 3000,
+        description: `Статус изменен на ${newStatus}`,
       });
     } catch (error) {
-      toast({
+      toaster.error({
         title: 'Ошибка',
         description: 'Не удалось обновить статус',
-        status: 'error',
-        duration: 3000,
       });
     }
   };
@@ -73,17 +68,14 @@ export const IncidentDetailPage = () => {
         id: incident.id,
         data: { priority: newPriority as any },
       });
-      toast({
+      toaster.success({
         title: 'Приоритет обновлен',
-        status: 'success',
-        duration: 3000,
+        description: `Приоритет изменен на ${newPriority}`,
       });
     } catch (error) {
-      toast({
+      toaster.error({
         title: 'Ошибка',
         description: 'Не удалось обновить приоритет',
-        status: 'error',
-        duration: 3000,
       });
     }
   };
@@ -98,19 +90,21 @@ export const IncidentDetailPage = () => {
 
   return (
     <Container maxW="container.xl" py={6}>
-      <VStack spacing={6} align="stretch">
+      <VStack gap={6} align="stretch">
         <HStack>
           <Button
-            leftIcon={<ArrowBackIcon />}
             variant="ghost"
             onClick={() => navigate('/incidents')}
           >
-            Назад к списку
+            <HStack gap={2}>
+              <ArrowLeft />
+              <Text>Назад к списку</Text>
+            </HStack>
           </Button>
         </HStack>
 
         <Box bg="white" p={6} borderRadius="lg" shadow="sm">
-          <VStack align="stretch" spacing={4}>
+          <VStack align="stretch" gap={4}>
             <HStack justify="space-between">
               <Heading size="lg">{incident.title}</Heading>
               <HStack>
@@ -125,27 +119,23 @@ export const IncidentDetailPage = () => {
 
             <Text color="gray.700">{incident.description}</Text>
 
-            <Divider />
+            <Separator />
 
-            <Grid templateColumns="repeat(2, 1fr)" gap={6}>
-              <GridItem>
-                <IncidentStatusSelect
-                  value={incident.status}
-                  onChange={handleStatusChange}
-                  isDisabled={updateIncident.isPending}
-                />
-              </GridItem>
-              <GridItem>
-                <IncidentPrioritySelect
-                  value={incident.priority}
-                  onChange={handlePriorityChange}
-                  isDisabled={updateIncident.isPending}
-                />
-              </GridItem>
-            </Grid>
+            <SimpleGrid columns={2} gap={6}>
+              <IncidentStatusSelect
+                value={incident.status}
+                onChange={handleStatusChange}
+                isDisabled={updateIncident.isPending}
+              />
+              <IncidentPrioritySelect
+                value={incident.priority}
+                onChange={handlePriorityChange}
+                isDisabled={updateIncident.isPending}
+              />
+            </SimpleGrid>
 
             <Box bg="gray.50" p={4} borderRadius="md">
-              <VStack align="start" spacing={2}>
+              <VStack align="start" gap={2}>
                 <Text fontWeight="bold">Информация о репортере:</Text>
                 <Text>Имя: {incident.reporter.name}</Text>
                 <Text>Email: {incident.reporter.email}</Text>
@@ -161,10 +151,10 @@ export const IncidentDetailPage = () => {
         </Box>
 
         <Box bg="white" p={6} borderRadius="lg" shadow="sm">
-          <VStack align="stretch" spacing={6}>
+          <VStack align="stretch" gap={6}>
             <Heading size="md">Комментарии</Heading>
             <CommentList comments={comments || []} isLoading={commentsLoading} />
-            <Divider />
+            <Separator />
             <CommentForm
               incidentId={incident.id}
               onSubmit={handleAddComment}

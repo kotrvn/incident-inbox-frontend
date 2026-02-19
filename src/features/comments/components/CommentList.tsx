@@ -1,7 +1,7 @@
 import { VStack, Text, Box } from '@chakra-ui/react';
 import { Comment } from '../../../types';
 import { CommentItem } from './CommentItem';
-import { EmptyState } from '../../shared/components/EmptyState';
+import { EmptyState } from '../../../shared/components/EmptyState';
 
 interface CommentListProps {
   comments: Comment[];

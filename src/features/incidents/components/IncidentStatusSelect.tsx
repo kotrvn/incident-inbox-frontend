@@ -1,6 +1,6 @@
-import { Select, FormControl, FormLabel } from '@chakra-ui/react';
+import { Select as ChakraSelect, Field, Portal, createListCollection } from '@chakra-ui/react';
 import { IncidentStatus } from '../../../types';
-import { STATUS_LABELS } from '../../shared/utils/constants';
+import { STATUS_LABELS } from '../../../utils/constants';
 
 interface IncidentStatusSelectProps {
   value: IncidentStatus;
@@ -8,21 +8,38 @@ interface IncidentStatusSelectProps {
   isDisabled?: boolean;
 }
 
+const statusCollection = createListCollection({
+  items: Object.entries(STATUS_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  })),
+});
+
 export const IncidentStatusSelect = ({ value, onChange, isDisabled }: IncidentStatusSelectProps) => {
   return (
-    <FormControl>
-      <FormLabel>Статус</FormLabel>
-      <Select
-        value={value}
-        onChange={(e) => onChange(e.target.value as IncidentStatus)}
-        isDisabled={isDisabled}
+    <Field.Root>
+      <Field.Label>Статус</Field.Label>
+      <ChakraSelect.Root
+        collection={statusCollection}
+        value={[value]}
+        onValueChange={(e) => onChange(e.value[0] as IncidentStatus)}
+        disabled={isDisabled}
       >
-        {Object.entries(STATUS_LABELS).map(([status, label]) => (
-          <option key={status} value={status}>
-            {label}
-          </option>
-        ))}
-      </Select>
-    </FormControl>
+        <ChakraSelect.Trigger>
+          <ChakraSelect.ValueText />
+        </ChakraSelect.Trigger>
+        <Portal>
+          <ChakraSelect.Positioner>
+            <ChakraSelect.Content>
+              {statusCollection.items.map((option) => (
+                <ChakraSelect.Item item={option} key={option.value}>
+                  {option.label}
+                </ChakraSelect.Item>
+              ))}
+            </ChakraSelect.Content>
+          </ChakraSelect.Positioner>
+        </Portal>
+      </ChakraSelect.Root>
+    </Field.Root>
   );
 };

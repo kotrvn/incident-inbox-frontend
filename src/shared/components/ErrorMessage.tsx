@@ -1,4 +1,5 @@
-import { Alert, AlertIcon, AlertTitle, AlertDescription, Button, VStack } from '@chakra-ui/react';
+import { Alert, AlertTitle, AlertDescription, Button, Icon } from '@chakra-ui/react';
+import { CircleAlert } from 'lucide-react';
 
 interface ErrorMessageProps {
   title?: string;
@@ -12,8 +13,19 @@ export const ErrorMessage = ({
   onRetry
 }: ErrorMessageProps) => {
   return (
-    <Alert status="error" variant="subtle" flexDirection="column" alignItems="center" justifyContent="center" textAlign="center" py={8} borderRadius="lg">
-      <AlertIcon boxSize="40px" mr={0} />
+    <Alert.Root
+      status="error"
+      variant="subtle"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      textAlign="center"
+      py={8}
+      borderRadius="lg"
+    >
+      <Icon size="lg" mb={2}>
+        <CircleAlert />
+      </Icon>
       <AlertTitle mt={4} mb={1} fontSize="lg">
         {title}
       </AlertTitle>
@@ -21,10 +33,10 @@ export const ErrorMessage = ({
         {message}
       </AlertDescription>
       {onRetry && (
-        <Button onClick={onRetry} colorScheme="red" size="sm">
+        <Button onClick={onRetry} colorPalette="red" size="sm">
           Попробовать снова
         </Button>
       )}
-    </Alert>
+    </Alert.Root>
   );
 };

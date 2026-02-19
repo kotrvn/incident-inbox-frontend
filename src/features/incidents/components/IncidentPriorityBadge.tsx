@@ -1,6 +1,6 @@
 import { Badge } from '@chakra-ui/react';
 import { IncidentPriority } from '../../../types';
-import { PRIORITY_LABELS } from '../../shared/utils/constants';
+import { PRIORITY_LABELS } from '../../../utils/constants';
 
 interface IncidentPriorityBadgeProps {
   priority: IncidentPriority;
@@ -16,10 +16,10 @@ const priorityColorScheme: Record<IncidentPriority, string> = {
 export const IncidentPriorityBadge = ({ priority }: IncidentPriorityBadgeProps) => {
   return (
     <Badge
-      colorScheme={priorityColorScheme[priority]}
+      colorPalette={priorityColorScheme[priority]}
       px={2}
       py={1}
-      borderRadius="full"
+      rounded="full"
       variant={priority === 'critical' ? 'solid' : 'subtle'}
     >
       {PRIORITY_LABELS[priority]}

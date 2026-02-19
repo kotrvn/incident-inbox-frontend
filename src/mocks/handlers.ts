@@ -130,4 +130,25 @@ export const handlers = [
     comments.push(newComment);
     return HttpResponse.json(newComment);
   }),
+
+  // bulk-update
+  http.post('/api/incidents/bulk-update', async ({ request }) => {
+    const { incidentIds, data } = (await request.json()) as {
+      incidentIds: string[];
+      data: UpdateIncidentRequest;
+    };
+
+    incidents = incidents.map((inc) => {
+      if (incidentIds.includes(inc.id)) {
+        return {
+          ...inc,
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+      }
+      return inc;
+    });
+
+    return HttpResponse.json({ success: true, updatedCount: incidentIds.length });
+  }),
 ];

@@ -15,7 +15,7 @@ const statusColorScheme: Record<IncidentStatus, string> = {
 
 export const IncidentStatusBadge = ({ status }: IncidentStatusBadgeProps) => {
   return (
-    <Badge colorScheme={statusColorScheme[status]} px={2} py={1} borderRadius="full">
+    <Badge colorPalette={statusColorScheme[status]} px={2} py={1} rounded="full">
       {STATUS_LABELS[status]}
     </Badge>
   );

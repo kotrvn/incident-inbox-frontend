@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react';
 import App from './App';
 
 async function enableMocking() {
@@ -19,7 +19,7 @@ async function enableMocking() {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5,
       retry: 1,
     },
   },
@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
 enableMocking().then(() => {
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-      <ChakraProvider>
+      <ChakraProvider value={defaultSystem}>
         <QueryClientProvider client={queryClient}>
           <App />
           <ReactQueryDevtools />
