@@ -20,8 +20,8 @@ import { CommentList } from '../../features/comments/components/CommentList';
 import { CommentForm } from '../../features/comments/components/CommentForm';
 import { LoadingSpinner } from '../../shared/components/LoadingSpinner';
 import { ErrorMessage } from '../../shared/components/ErrorMessage';
-import { toaster } from '../../utils/toaster';
-import { formatDate } from '../../utils/dateFormat';
+import { toaster } from '../../shared/utils/toaster';
+import { formatDate } from '../../shared/utils/dateFormat';
 import { ArrowLeft } from 'lucide-react';
 
 export const IncidentDetailPage = () => {
@@ -154,7 +154,6 @@ export const IncidentDetailPage = () => {
           <VStack align="stretch" gap={6}>
             <Heading size="md">Комментарии</Heading>
             <CommentList comments={comments || []} isLoading={commentsLoading} />
-            <Separator />
             <CommentForm
               incidentId={incident.id}
               onSubmit={handleAddComment}

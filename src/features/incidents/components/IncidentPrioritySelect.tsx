@@ -1,7 +1,7 @@
 import { Select as ChakraSelect, Field, Portal, createListCollection, Icon } from '@chakra-ui/react';
 import { ChevronDown } from 'lucide-react';
 import { IncidentPriority } from '../../../types';
-import { PRIORITY_LABELS } from '../../../utils/constants';
+import { PRIORITY_LABELS } from '../../../shared/utils/constants';
 
 interface IncidentPrioritySelectProps {
   value: IncidentPriority;

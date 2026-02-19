@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { useCommentDraft } from '../hooks/useCommentDraft';
 import { Check, Clock, Info } from 'lucide-react';
-import { toaster } from '../../../utils/toaster';
+import { toaster } from '../../../shared/utils/toaster';
 
 interface CommentFormProps {
   incidentId: string;

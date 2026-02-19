@@ -1,15 +1,15 @@
 import { http, HttpResponse } from 'msw';
-import { Incident, Comment, CreateCommentRequest, UpdateIncidentRequest, IncidentsResponse } from '../types';
+import { Incident, Comment, CreateCommentRequest, UpdateIncidentRequest } from '../types';
 import { incidents as mockIncidents, comments as mockComments } from './data';
 
-// Работаем с копиями данных, чтобы изменения не влияли на исходные данные
 let incidents = [...mockIncidents];
 let comments = [...mockComments];
 
 export const handlers = [
-  // Get all incidents with pagination
   http.get('/api/incidents', ({ request }) => {
+    console.log('MSW: GET /api/incidents');
     const url = new URL(request.url);
+    
     const page = Number(url.searchParams.get('page') || '1');
     const limit = Number(url.searchParams.get('limit') || '10');
     const search = url.searchParams.get('search') || '';
@@ -18,6 +18,9 @@ export const handlers = [
     const sortBy = url.searchParams.get('sortBy') || 'createdAt';
     const sortOrder = url.searchParams.get('sortOrder') || 'desc';
 
+    console.log('MSW: Params:', { page, limit, search, status, priority, sortBy, sortOrder });
+
+    // Сначала фильтруем
     let filteredIncidents = [...incidents];
 
     // Apply search
@@ -30,21 +33,23 @@ export const handlers = [
       );
     }
 
-    // Apply filters
-    if (status) {
+    // Apply status filter
+    if (status && status !== '') {
       filteredIncidents = filteredIncidents.filter((inc) => inc.status === status);
+      console.log(`MSW: After status filter (${status}):`, filteredIncidents.length);
     }
 
-    if (priority) {
+    // Apply priority filter
+    if (priority && priority !== '') {
       filteredIncidents = filteredIncidents.filter((inc) => inc.priority === priority);
+      console.log(`MSW: After priority filter (${priority}):`, filteredIncidents.length);
     }
 
     // Apply sorting
     filteredIncidents.sort((a, b) => {
-      let aValue = a[sortBy as keyof Incident];
-      let bValue = b[sortBy as keyof Incident];
+      let aValue: any = a[sortBy as keyof Incident];
+      let bValue: any = b[sortBy as keyof Incident];
 
-      // Handle nested fields
       if (sortBy === 'reporter') {
         aValue = a.reporter.name;
         bValue = b.reporter.name;
@@ -58,18 +63,34 @@ export const handlers = [
     });
 
     // Apply pagination
+    const totalCount = filteredIncidents.length;
+    const totalPages = Math.ceil(totalCount / limit);
     const start = (page - 1) * limit;
     const paginatedIncidents = filteredIncidents.slice(start, start + limit);
 
-    const response: IncidentsResponse = {
-      incidents: paginatedIncidents,
-      total: filteredIncidents.length,
-    };
+    console.log('MSW: Returning:', {
+      page,
+      limit,
+      totalCount,
+      totalPages,
+      returnedCount: paginatedIncidents.length,
+      start,
+      end: start + paginatedIncidents.length
+    });
 
-    return HttpResponse.json(response);
+    return HttpResponse.json({
+      incidents: paginatedIncidents,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    });
   }),
 
-  // Get single incident with comments
   http.get('/api/incidents/:id', ({ params }) => {
     const incident = incidents.find((i) => i.id === params.id);
     
@@ -88,7 +109,6 @@ export const handlers = [
     });
   }),
 
-  // Update incident
   http.patch('/api/incidents/:id', async ({ params, request }) => {
     const updates = (await request.json()) as UpdateIncidentRequest;
     const incidentIndex = incidents.findIndex((i) => i.id === params.id);
@@ -109,13 +129,11 @@ export const handlers = [
     return HttpResponse.json(incidents[incidentIndex]);
   }),
 
-  // Get comments for incident
   http.get('/api/incidents/:incidentId/comments', ({ params }) => {
     const incidentComments = comments.filter((c) => c.incidentId === params.incidentId);
     return HttpResponse.json(incidentComments);
   }),
 
-  // Add comment
   http.post('/api/incidents/:incidentId/comments', async ({ params, request }) => {
     const { content, author } = (await request.json()) as CreateCommentRequest;
     
@@ -131,7 +149,6 @@ export const handlers = [
     return HttpResponse.json(newComment);
   }),
 
-  // bulk-update
   http.post('/api/incidents/bulk-update', async ({ request }) => {
     const { incidentIds, data } = (await request.json()) as {
       incidentIds: string[];

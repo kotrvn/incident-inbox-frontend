@@ -1,6 +1,6 @@
 import { Box, Text, VStack, HStack, Avatar, Separator } from '@chakra-ui/react';
 import { Comment } from '../../../types';
-import { formatRelativeTime } from '../../../utils/dateFormat';
+import { formatRelativeTime } from '../../../shared/utils/dateFormat';
 
 interface CommentItemProps {
   comment: Comment;

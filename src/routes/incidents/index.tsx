@@ -25,7 +25,7 @@ import { ErrorMessage } from '../../shared/components/ErrorMessage';
 import { SkeletonTable } from '../../shared/components/SkeletonTable';
 import { EmptyState } from '../../shared/components/EmptyState';
 import { useDebounce } from '../../shared/hooks/useDebounce';
-import { STATUS_LABELS, PRIORITY_LABELS } from '../../utils/constants';
+import { STATUS_LABELS, PRIORITY_LABELS } from '../../shared/utils/constants';
 import { ChevronDown } from 'lucide-react';
 
 export const IncidentsPage = () => {
@@ -87,6 +87,8 @@ export const IncidentsPage = () => {
   // Обновляем URL при изменении фильтров
   useEffect(() => {
     const params = new URLSearchParams();
+
+    // Добавляем параметры только если они отличаются от дефолтных
     if (search) params.set('search', search);
     if (statusFilter) params.set('status', statusFilter);
     if (priorityFilter) params.set('priority', priorityFilter);
@@ -95,7 +97,15 @@ export const IncidentsPage = () => {
     if (page !== 1) params.set('page', String(page));
     if (limit !== 10) params.set('limit', String(limit));
 
-    setSearchParams(params);
+    // Получаем текущий URL без параметров
+    const currentParams = new URLSearchParams(searchParams);
+    const paramsString = params.toString();
+    const currentParamsString = currentParams.toString();
+
+    // Обновляем URL только если параметры изменились
+    if (paramsString !== currentParamsString) {
+      setSearchParams(params, { replace: true });
+    }
   }, [search, statusFilter, priorityFilter, sortField, sortOrder, page, limit]);
 
   const handleSort = (field: string) => {
@@ -105,8 +115,18 @@ export const IncidentsPage = () => {
       setSortField(field);
       setSortOrder('asc');
     }
-    setPage(1); // Сбрасываем на первую страницу при сортировке
+    setPage(1);
   };
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, priorityFilter, sortField, sortOrder]);
+
+  useEffect(() => {
+    if (data?.pagination && page > data.pagination.totalPages) {
+      setPage(data.pagination.totalPages);
+    }
+  }, [data?.pagination?.totalPages, page]);
 
   const handleReset = () => {
     setSearch('');
@@ -120,8 +140,10 @@ export const IncidentsPage = () => {
   };
 
   const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-    setSelectedIds([]); // Сбрасываем выделение при смене страницы
+    if (newPage >= 1 && (!data?.pagination || newPage <= data.pagination.totalPages)) {
+      setPage(newPage);
+      setSelectedIds([]); // Сбрасываем выделение при смене страницы
+    }
   };
 
   const handlePageSizeChange = (newLimit: number) => {
@@ -167,6 +189,9 @@ export const IncidentsPage = () => {
       />
     );
   }
+
+  console.log('data?.pagination?.totalCount', data?.pagination);
+
 
   return (
     <Container maxW="container.xl">

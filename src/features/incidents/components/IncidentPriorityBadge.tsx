@@ -1,6 +1,6 @@
 import { Badge } from '@chakra-ui/react';
 import { IncidentPriority } from '../../../types';
-import { PRIORITY_LABELS } from '../../../utils/constants';
+import { PRIORITY_LABELS } from '../../../shared/utils/constants';
 
 interface IncidentPriorityBadgeProps {
   priority: IncidentPriority;

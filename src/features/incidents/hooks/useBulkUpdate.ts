@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toaster } from '../../../utils/toaster';
+import { toaster } from '../../../shared/utils/toaster';
 import { IncidentStatus, IncidentPriority } from '../../../types';
 
 interface BulkUpdateParams {

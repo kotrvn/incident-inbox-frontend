@@ -1,4 +1,4 @@
-import { HStack, Text, Icon, Button, Select as ChakraSelect, Field, Portal, createListCollection } from '@chakra-ui/react';
+import { HStack, Text, Icon, Pagination as ChakraPagination, Select as ChakraSelect, Field, Portal, createListCollection, IconButton, ButtonGroup } from '@chakra-ui/react';
 import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 interface PaginationProps {
@@ -11,7 +11,6 @@ interface PaginationProps {
   showPageSize?: boolean;
 }
 
-// Создаем коллекцию для опций размера страницы
 const pageSizeOptions = createListCollection({
   items: [
     { value: '5', label: '5' },
@@ -30,91 +29,76 @@ export const Pagination = ({
   onPageSizeChange,
   showPageSize = true,
 }: PaginationProps) => {
-  const startItem = (currentPage - 1) * pageSize + 1;
-  const endItem = Math.min(currentPage * pageSize, totalItems);
+  const safeCurrentPage = currentPage || 1;
+  const safeTotalPages = totalPages || 1;
+  const safeTotalItems = totalItems || 0;
+  const safePageSize = pageSize || 10;
 
-  const getPageNumbers = () => {
-    if (totalPages <= 5) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
-    }
+  console.log('Pagination render:', { safeCurrentPage, safeTotalPages, safeTotalItems, safePageSize });
 
-    if (currentPage <= 3) {
-      return [1, 2, 3, 4, 5];
-    }
+  const startItem = safeTotalItems === 0 ? 0 : (safeCurrentPage - 1) * safePageSize + 1;
+  const endItem = Math.min(safeCurrentPage * safePageSize, safeTotalItems);
 
-    if (currentPage >= totalPages - 2) {
-      return [
-        totalPages - 4,
-        totalPages - 3,
-        totalPages - 2,
-        totalPages - 1,
-        totalPages,
-      ];
-    }
-
-    return [
-      currentPage - 2,
-      currentPage - 1,
-      currentPage,
-      currentPage + 1,
-      currentPage + 2,
-    ];
-  };
-
-  const pageNumbers = getPageNumbers();
+  if (safeTotalItems === 0) {
+    return null;
+  }
 
   return (
     <HStack justify="space-between" width="100%" py={4}>
       <Text color="gray.600" fontSize="sm">
-        Показано {startItem} - {endItem} из {totalItems} инцидентов
+        Показано {startItem} - {endItem} из {safeTotalItems} инцидентов
       </Text>
 
       <HStack gap={4}>
-        <HStack gap={2}>
-          <Button
-            size="sm"
-            variant="outline"
-            colorPalette="gray"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            <Icon size="sm">
-              <ChevronLeft />
-            </Icon>
-          </Button>
-
-          <HStack gap={1}>
-            {pageNumbers.map((pageNum) => (
-              <Button
-                key={pageNum}
-                size="sm"
-                variant={currentPage === pageNum ? 'solid' : 'outline'}
-                colorPalette={currentPage === pageNum ? 'blue' : 'gray'}
-                onClick={() => onPageChange(pageNum)}
+        <ChakraPagination.Root
+          count={safeTotalItems}
+          pageSize={safePageSize}
+          page={safeCurrentPage}
+          onPageChange={(e) => onPageChange(e.page)}
+        >
+          <ButtonGroup variant="outline" size="sm">
+            <ChakraPagination.PrevTrigger asChild>
+              <IconButton
+                colorPalette="gray"
+                disabled={safeCurrentPage === 1}
               >
-                {pageNum}
-              </Button>
-            ))}
-          </HStack>
+                <Icon size="sm">
+                  <ChevronLeft />
+                </Icon>
+              </IconButton>
+            </ChakraPagination.PrevTrigger>
 
-          <Button
-            size="sm"
-            variant="outline"
-            colorPalette="gray"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            <Icon size="sm">
-              <ChevronRight />
-            </Icon>
-          </Button>
-        </HStack>
+            <ChakraPagination.Items
+              render={(page) => (
+                <IconButton
+                  key={page.value}
+                  variant={safeCurrentPage === page.value ? 'solid' : 'outline'}
+                  colorPalette={safeCurrentPage === page.value ? 'blue' : 'gray'}
+                  onClick={() => onPageChange(page.value)}
+                >
+                  {page.value}
+                </IconButton>
+              )}
+            />
+
+            <ChakraPagination.NextTrigger asChild>
+              <IconButton
+                colorPalette="gray"
+                disabled={safeCurrentPage === safeTotalPages}
+              >
+                <Icon size="sm">
+                  <ChevronRight />
+                </Icon>
+              </IconButton>
+            </ChakraPagination.NextTrigger>
+          </ButtonGroup>
+        </ChakraPagination.Root>
 
         {showPageSize && (
           <Field.Root width="100px">
             <ChakraSelect.Root
               collection={pageSizeOptions}
-              value={[String(pageSize)]}
+              value={[String(safePageSize)]}
               onValueChange={(e) => onPageSizeChange(Number(e.value[0]))}
             >
               <ChakraSelect.Trigger>

@@ -1,6 +1,6 @@
 import { Badge } from '@chakra-ui/react';
 import { IncidentStatus } from '../../../types';
-import { STATUS_LABELS } from '../../../utils/constants';
+import { STATUS_LABELS } from '../../../shared/utils/constants';
 
 interface IncidentStatusBadgeProps {
   status: IncidentStatus;

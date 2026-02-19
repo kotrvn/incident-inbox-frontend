@@ -11,7 +11,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { IncidentStatus, IncidentPriority } from '../../../types';
-import { STATUS_LABELS, PRIORITY_LABELS } from '../../../utils/constants';
+import { STATUS_LABELS, PRIORITY_LABELS } from '../../../shared/utils/constants';
 import { ChevronDown } from 'lucide-react';
 
 interface BulkActionBarProps {

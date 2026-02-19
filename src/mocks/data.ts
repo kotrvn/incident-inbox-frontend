@@ -11,8 +11,8 @@ export const incidents: Incident[] = [
       name: 'Алексей Петров',
       email: 'a.petrov@driver.logistics.ru',
     },
-    createdAt: '2024-01-15T08:30:00Z',
-    updatedAt: '2024-01-15T08:30:00Z',
+    createdAt: '2026-01-15T08:30:00Z',
+    updatedAt: '2026-01-15T08:30:00Z',
   },
   {
     id: 'INC-002',
@@ -24,8 +24,8 @@ export const incidents: Incident[] = [
       name: 'Мария Иванова',
       email: 'm.ivanova@driver.logistics.ru',
     },
-    createdAt: '2024-01-14T14:20:00Z',
-    updatedAt: '2024-01-15T09:00:00Z',
+    createdAt: '2026-01-14T14:20:00Z',
+    updatedAt: '2026-01-15T09:00:00Z',
   },
   {
     id: 'INC-003',
@@ -37,8 +37,8 @@ export const incidents: Incident[] = [
       name: 'Дмитрий Сидоров',
       email: 'd.sidorov@driver.logistics.ru',
     },
-    createdAt: '2024-01-15T10:15:00Z',
-    updatedAt: '2024-01-15T10:15:00Z',
+    createdAt: '2026-01-15T10:15:00Z',
+    updatedAt: '2026-01-15T10:15:00Z',
   },
   {
     id: 'INC-004',
@@ -50,8 +50,8 @@ export const incidents: Incident[] = [
       name: 'Елена Козлова',
       email: 'e.kozlova@driver.logistics.ru',
     },
-    createdAt: '2024-01-13T16:45:00Z',
-    updatedAt: '2024-01-14T11:30:00Z',
+    createdAt: '2026-01-13T16:45:00Z',
+    updatedAt: '2026-01-14T11:30:00Z',
   },
   {
     id: 'INC-005',
@@ -63,8 +63,8 @@ export const incidents: Incident[] = [
       name: 'Сергей Николаев',
       email: 's.nikolaev@driver.logistics.ru',
     },
-    createdAt: '2024-01-15T11:00:00Z',
-    updatedAt: '2024-01-15T11:30:00Z',
+    createdAt: '2026-01-15T11:00:00Z',
+    updatedAt: '2026-01-15T11:30:00Z',
   },
   {
     id: 'INC-006',
@@ -76,40 +76,10 @@ export const incidents: Incident[] = [
       name: 'Анна Морозова',
       email: 'a.morozova@driver.logistics.ru',
     },
-    createdAt: '2024-01-10T09:00:00Z',
-    updatedAt: '2024-01-12T15:00:00Z',
+    createdAt: '2026-01-10T09:00:00Z',
+    updatedAt: '2026-01-12T15:00:00Z',
   },
-];
-
-export const comments: Comment[] = [
-  {
-    id: 'CMT-001',
-    incidentId: 'INC-002',
-    author: 'Оператор Анна',
-    content: 'Связалась с клиентом, извинилась за задержку. Предложила скидку 10% на следующую доставку.',
-    createdAt: '2024-01-15T09:00:00Z',
-  },
-  {
-    id: 'CMT-002',
-    incidentId: 'INC-004',
-    author: 'Оператор Михаил',
-    content: 'Организован возврат на склад. Клиенту отправлена форма для возврата средств.',
-    createdAt: '2024-01-14T11:30:00Z',
-  },
-  {
-    id: 'CMT-003',
-    incidentId: 'INC-005',
-    author: 'Оператор Анна',
-    content: 'Техническая служба выехала к водителю с новым терминалом.',
-    createdAt: '2024-01-15T11:30:00Z',
-  },
-  {
-    id: 'CMT-004',
-    incidentId: 'INC-006',
-    author: 'Оператор Михаил',
-    content: 'Накладная восстановлена из электронного архива. Инцидент закрыт.',
-    createdAt: '2024-01-12T15:00:00Z',
-  },{
+   {
     id: 'INC-007',
     title: 'Проблема с документацией',
     description: 'Отсутствуют необходимые документы для доставки',
@@ -119,8 +89,8 @@ export const comments: Comment[] = [
       name: 'Игорь Соколов',
       email: 'i.sokolov@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T09:00:00Z',
-    updatedAt: '2024-01-16T09:00:00Z',
+    createdAt: '2026-01-16T09:00:00Z',
+    updatedAt: '2026-01-16T09:00:00Z',
   },
   {
     id: 'INC-008',
@@ -132,8 +102,8 @@ export const comments: Comment[] = [
       name: 'Павел Новиков',
       email: 'p.novikov@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T10:30:00Z',
-    updatedAt: '2024-01-16T11:00:00Z',
+    createdAt: '2026-01-16T10:30:00Z',
+    updatedAt: '2026-01-16T11:00:00Z',
   },
   {
     id: 'INC-009',
@@ -145,8 +115,8 @@ export const comments: Comment[] = [
       name: 'Ольга Смирнова',
       email: 'o.smirnova@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T12:15:00Z',
-    updatedAt: '2024-01-16T12:15:00Z',
+    createdAt: '2026-01-16T12:15:00Z',
+    updatedAt: '2026-01-16T12:15:00Z',
   },
   {
     id: 'INC-010',
@@ -158,8 +128,8 @@ export const comments: Comment[] = [
       name: 'Денис Попов',
       email: 'd.popov@driver.logistics.ru',
     },
-    createdAt: '2024-01-15T14:00:00Z',
-    updatedAt: '2024-01-16T13:00:00Z',
+    createdAt: '2026-01-15T14:00:00Z',
+    updatedAt: '2026-01-16T13:00:00Z',
   },
   {
     id: 'INC-011',
@@ -171,8 +141,8 @@ export const comments: Comment[] = [
       name: 'Татьяна Волкова',
       email: 't.volkova@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T13:45:00Z',
-    updatedAt: '2024-01-16T14:00:00Z',
+    createdAt: '2026-01-16T13:45:00Z',
+    updatedAt: '2026-01-16T14:00:00Z',
   },
   {
     id: 'INC-012',
@@ -184,8 +154,8 @@ export const comments: Comment[] = [
       name: 'Андрей Морозов',
       email: 'a.morozov@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T15:20:00Z',
-    updatedAt: '2024-01-16T15:20:00Z',
+    createdAt: '2026-01-16T15:20:00Z',
+    updatedAt: '2026-01-16T15:20:00Z',
   },
   {
     id: 'INC-013',
@@ -197,8 +167,8 @@ export const comments: Comment[] = [
       name: 'Евгения Лебедева',
       email: 'e.lebedeva@driver.logistics.ru',
     },
-    createdAt: '2024-01-15T08:00:00Z',
-    updatedAt: '2024-01-16T09:30:00Z',
+    createdAt: '2026-01-15T08:00:00Z',
+    updatedAt: '2026-01-16T09:30:00Z',
   },
   {
     id: 'INC-014',
@@ -210,8 +180,8 @@ export const comments: Comment[] = [
       name: 'Константин Соловьев',
       email: 'k.soloviev@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T16:10:00Z',
-    updatedAt: '2024-01-16T16:30:00Z',
+    createdAt: '2026-01-16T16:10:00Z',
+    updatedAt: '2026-01-16T16:30:00Z',
   },
   {
     id: 'INC-015',
@@ -223,7 +193,39 @@ export const comments: Comment[] = [
       name: 'Лариса Козлова',
       email: 'l.kozlova@driver.logistics.ru',
     },
-    createdAt: '2024-01-16T17:00:00Z',
-    updatedAt: '2024-01-16T17:00:00Z',
+    createdAt: '2026-01-16T17:00:00Z',
+    updatedAt: '2026-01-16T17:00:00Z',
   },
+];
+
+export const comments: Comment[] = [
+  {
+    id: 'CMT-001',
+    incidentId: 'INC-002',
+    author: 'Оператор Анна',
+    content: 'Связалась с клиентом, извинилась за задержку. Предложила скидку 10% на следующую доставку.',
+    createdAt: '2026-01-15T09:00:00Z',
+  },
+  {
+    id: 'CMT-002',
+    incidentId: 'INC-004',
+    author: 'Оператор Михаил',
+    content: 'Организован возврат на склад. Клиенту отправлена форма для возврата средств.',
+    createdAt: '2026-01-14T11:30:00Z',
+  },
+  {
+    id: 'CMT-003',
+    incidentId: 'INC-005',
+    author: 'Оператор Анна',
+    content: 'Техническая служба выехала к водителю с новым терминалом.',
+    createdAt: '2026-01-15T11:30:00Z',
+  },
+  {
+    id: 'CMT-004',
+    incidentId: 'INC-006',
+    author: 'Оператор Михаил',
+    content: 'Накладная восстановлена из электронного архива. Инцидент закрыт.',
+    createdAt: '2026-01-12T15:00:00Z',
+  },
+ 
 ];

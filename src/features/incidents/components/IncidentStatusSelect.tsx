@@ -1,7 +1,7 @@
 import { Select as ChakraSelect, Field, Portal, createListCollection, Icon } from '@chakra-ui/react';
 import { ChevronDown } from 'lucide-react';
 import { IncidentStatus } from '../../../types';
-import { STATUS_LABELS } from '../../../utils/constants';
+import { STATUS_LABELS } from '../../../shared/utils/constants';
 
 interface IncidentStatusSelectProps {
   value: IncidentStatus;

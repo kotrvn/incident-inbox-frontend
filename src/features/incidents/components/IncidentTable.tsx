@@ -12,7 +12,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Incident } from '../../../types';
 import { IncidentStatusBadge } from './IncidentStatusBadge';
 import { IncidentPriorityBadge } from './IncidentPriorityBadge';
-import { formatDate } from '../../../utils/dateFormat';
+import { formatDate } from '../../../shared/utils/dateFormat';
 import { ArrowDownWideNarrow, ArrowUpWideNarrow } from 'lucide-react';
 
 interface IncidentTableProps {
