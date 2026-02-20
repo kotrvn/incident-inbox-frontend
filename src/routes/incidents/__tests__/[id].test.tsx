@@ -6,176 +6,202 @@ import { server } from '../../../mocks/server';
 import { http, HttpResponse } from 'msw';
 
 vi.mock('../../../shared/utils/toaster', () => ({
-  toaster: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+    toaster: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
 }));
 
 const renderOptions = {
-  initialEntries: ['/incidents/INC-001'],
-  path: '/incidents/:id',
+    initialEntries: ['/incidents/INC-001'],
+    path: '/incidents/:id',
 };
 
-// ✅ Хелпер для чтения черновика
 const getDraft = (incidentId: string) => {
-  try {
-    const drafts = JSON.parse(localStorage.getItem('comment_drafts') || '{}');
-    return drafts[incidentId]?.content || null;
-  } catch {
-    return null;
-  }
+    try {
+        const drafts = JSON.parse(localStorage.getItem('comment_drafts') || '{}');
+        return drafts[incidentId]?.content || null;
+    } catch {
+        return null;
+    }
 };
 
-describe('IncidentDetailPage', () => {
-  beforeAll(() => {
-    server.listen({ onUnhandledRequest: 'warn' });
-  });
+describe('Детальная страница инцидента', () => {
+    beforeAll(() => {
+        server.listen({ onUnhandledRequest: 'warn' });
+    });
 
-  afterEach(() => {
-    server.resetHandlers();
-    vi.clearAllMocks();
-    localStorage.clear();
-  });
+    afterEach(() => {
+        server.resetHandlers();
+        vi.clearAllMocks();
+        localStorage.clear();
+    });
 
-  afterAll(() => {
-    server.close();
-  });
+    afterAll(() => {
+        server.close();
+    });
 
-  it('загружает и отображает детали инцидента', async () => {
-    render(<IncidentDetailPage />, renderOptions);
+    it('Загружает и отображает детали инцидента', async () => {
+        render(<IncidentDetailPage />, renderOptions);
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
-
-    expect(screen.getByText(/Повреждённая посылка/)).toBeInTheDocument();
-    expect(screen.getByText(/Алексей Петров/)).toBeInTheDocument();
-  });
-
-  it('отображает 404 для несуществующего инцидента', async () => {
-    server.use(
-      http.get('*/api/incidents/INC-999', () => {
-        return new HttpResponse(
-          JSON.stringify({ message: 'Инцидент не найден' }),
-          { status: 404 }
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
         );
-      })
-    );
 
-    render(<IncidentDetailPage />, {
-      initialEntries: ['/incidents/INC-999'],
-      path: '/incidents/:id',
+        expect(screen.getByText(/Повреждённая посылка/)).toBeInTheDocument();
+        expect(screen.getByText(/Алексей Петров/)).toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      expect(screen.getByText(/Инцидент не найден/)).toBeInTheDocument();
-    }, { timeout: 3000 });
-  });
+    it('Отображает 404 для несуществующего инцидента', async () => {
+        server.use(
+            http.get('*/api/incidents/INC-999', () => {
+                return new HttpResponse(JSON.stringify({ message: 'Инцидент не найден' }), {
+                    status: 404,
+                });
+            })
+        );
 
-  it('обновляет статус при выборе нового значения', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<IncidentDetailPage />, renderOptions);
+        render(<IncidentDetailPage />, {
+            initialEntries: ['/incidents/INC-999'],
+            path: '/incidents/:id',
+        });
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
-
-    const statusSelect = screen.getAllByRole('combobox')[0];
-    await user.click(statusSelect);
-
-    const inProgressOption = await screen.findByText('В работе');
-    await user.click(inProgressOption);
-
-    const { toaster } = await import('../../../shared/utils/toaster');
-    await waitFor(() => {
-      expect(toaster.success).toHaveBeenCalled();
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Инцидент не найден/)).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
     });
-  });
 
-  it('добавляет комментарий', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<IncidentDetailPage />, renderOptions);
+    it('Oбновляет статус при выборе нового значения', async () => {
+        const user = userEvent.setup({ delay: null });
+        render(<IncidentDetailPage />, renderOptions);
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-    const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
-    await user.type(commentInput, 'Тестовый комментарий');
+        const statusSelect = screen.getAllByRole('combobox')[0];
+        await user.click(statusSelect);
 
-    const submitButton = screen.getByText('Добавить комментарий');
-    await user.click(submitButton);
+        const inProgressOption = await screen.findByText('В работе');
+        await user.click(inProgressOption);
 
-    await waitFor(() => {
-      expect(screen.getByText('Тестовый комментарий')).toBeInTheDocument();
-    }, { timeout: 3000 });
-  });
+        const { toaster } = await import('../../../shared/utils/toaster');
+        await waitFor(() => {
+            expect(toaster.success).toHaveBeenCalled();
+        });
+    });
 
-  it('сохраняет черновик комментария в localStorage', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<IncidentDetailPage />, renderOptions);
+    it('Добавляет комментарий', async () => {
+        const user = userEvent.setup({ delay: null });
+        render(<IncidentDetailPage />, renderOptions);
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-    const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
-    await user.type(commentInput, 'Черновик комментария');
+        const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
+        await user.type(commentInput, 'Тестовый комментарий');
 
-    // ✅ useDebounce = 1000ms, затем сохранение в localStorage
-    // Ждём debounce + эффект сохранения
-    await waitFor(() => {
-      expect(getDraft('INC-001')).toBe('Черновик комментария');
-    }, { timeout: 3000 });
-  });
+        const submitButton = screen.getByText('Добавить комментарий');
+        await user.click(submitButton);
 
-  it('очищает черновик после отправки комментария', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<IncidentDetailPage />, renderOptions);
+        await waitFor(
+            () => {
+                expect(screen.getByText('Тестовый комментарий')).toBeInTheDocument();
+            },
+            { timeout: 3000 }
+        );
+    });
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    it('Сохраняет черновик комментария в localStorage', async () => {
+        const user = userEvent.setup({ delay: null });
+        render(<IncidentDetailPage />, renderOptions);
 
-    const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
-    await user.type(commentInput, 'Комментарий для отправки');
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-    // Ждём сохранения черновика
-    await waitFor(() => {
-      expect(getDraft('INC-001')).toBe('Комментарий для отправки');
-    }, { timeout: 3000 });
+        const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
+        await user.type(commentInput, 'Черновик комментария');
 
-    // Отправляем комментарий
-    const submitButton = screen.getByText('Добавить комментарий');
-    await user.click(submitButton);
+        await waitFor(
+            () => {
+                expect(getDraft('INC-001')).toBe('Черновик комментария');
+            },
+            { timeout: 3000 }
+        );
+    });
 
-    // ✅ clearDraft() удаляет ключ из объекта drafts
-    await waitFor(() => {
-      expect(getDraft('INC-001')).toBeNull();
-    }, { timeout: 3000 });
+    it('Очищает черновик после отправки комментария', async () => {
+        const user = userEvent.setup({ delay: null });
+        render(<IncidentDetailPage />, renderOptions);
 
-    // Поле ввода очищено
-    expect(commentInput).toHaveValue('');
-  });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-  it('загружает черновик из localStorage при открытии', async () => {
-    // ✅ Предварительно сохраняем черновик
-    localStorage.setItem('comment_drafts', JSON.stringify({
-      'INC-001': {
-        content: 'Ранее сохранённый черновик',
-        timestamp: new Date().toISOString(),
-      },
-    }));
+        const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
+        await user.type(commentInput, 'Комментарий для отправки');
 
-    render(<IncidentDetailPage />, renderOptions);
+        await waitFor(
+            () => {
+                expect(getDraft('INC-001')).toBe('Комментарий для отправки');
+            },
+            { timeout: 3000 }
+        );
 
-    await waitFor(() => {
-      expect(screen.getByText(/INC-001/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+        const submitButton = screen.getByText('Добавить комментарий');
+        await user.click(submitButton);
 
-    // ✅ Черновик загружен в textarea
-    const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
-    expect(commentInput).toHaveValue('Ранее сохранённый черновик');
-  });
+        await waitFor(
+            () => {
+                expect(getDraft('INC-001')).toBeNull();
+            },
+            { timeout: 3000 }
+        );
+
+        expect(commentInput).toHaveValue('');
+    });
+
+    it('Загружает черновик из localStorage при открытии', async () => {
+        localStorage.setItem(
+            'comment_drafts',
+            JSON.stringify({
+                'INC-001': {
+                    content: 'Ранее сохранённый черновик',
+                    timestamp: new Date().toISOString(),
+                },
+            })
+        );
+
+        render(<IncidentDetailPage />, renderOptions);
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(/INC-001/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
+
+        const commentInput = screen.getByPlaceholderText('Опишите действия по инциденту...');
+        expect(commentInput).toHaveValue('Ранее сохранённый черновик');
+    });
 });

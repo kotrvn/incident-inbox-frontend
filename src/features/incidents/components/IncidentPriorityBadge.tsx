@@ -3,26 +3,26 @@ import { IncidentPriority } from '../../../types';
 import { PRIORITY_LABELS } from '../../../shared/utils/constants';
 
 interface IncidentPriorityBadgeProps {
-  priority: IncidentPriority;
+    priority: IncidentPriority;
 }
 
 const priorityColorScheme: Record<IncidentPriority, string> = {
-  low: 'teal',
-  medium: 'orange',
-  high: 'red',
-  critical: 'red',
+    low: 'teal',
+    medium: 'orange',
+    high: 'red',
+    critical: 'red',
 };
 
 export const IncidentPriorityBadge = ({ priority }: IncidentPriorityBadgeProps) => {
-  return (
-    <Badge
-      colorPalette={priorityColorScheme[priority]}
-      px={2}
-      py={1}
-      rounded="full"
-      variant={priority === 'critical' ? 'solid' : 'subtle'}
-    >
-      {PRIORITY_LABELS[priority]}
-    </Badge>
-  );
+    return (
+        <Badge
+            colorPalette={priorityColorScheme[priority]}
+            px={2}
+            py={1}
+            rounded="full"
+            variant={priority === 'critical' ? 'solid' : 'subtle'}
+        >
+            {PRIORITY_LABELS[priority]}
+        </Badge>
+    );
 };

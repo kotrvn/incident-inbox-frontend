@@ -1,66 +1,63 @@
-// Domain types for Incident Inbox
-
 export type IncidentStatus = 'new' | 'in_progress' | 'resolved' | 'closed';
 export type IncidentPriority = 'low' | 'medium' | 'high' | 'critical';
 
 export interface Incident {
-  id: string;
-  title: string;
-  description: string;
-  status: IncidentStatus;
-  priority: IncidentPriority;
-  reporter: {
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    title: string;
+    description: string;
+    status: IncidentStatus;
+    priority: IncidentPriority;
+    reporter: {
+        name: string;
+        email: string;
+    };
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface Comment {
-  id: string;
-  incidentId: string;
-  author: string;
-  content: string;
-  createdAt: string;
+    id: string;
+    incidentId: string;
+    author: string;
+    content: string;
+    createdAt: string;
 }
 
 export interface IncidentWithComments extends Incident {
-  comments: Comment[];
+    comments: Comment[];
 }
 
-// API Response types
 export interface IncidentsResponse {
-  incidents: Incident[];
-  total: number;
+    incidents: Incident[];
+    total: number;
 }
 
 export interface CreateCommentRequest {
-  incidentId: string;
-  author: string;
-  content: string;
+    incidentId: string;
+    author: string;
+    content: string;
 }
 
 export interface UpdateIncidentRequest {
-  status?: IncidentStatus;
-  priority?: IncidentPriority;
+    status?: IncidentStatus;
+    priority?: IncidentPriority;
 }
 
 export interface BulkUpdateRequest {
-  incidentIds: string[];
-  data: UpdateIncidentRequest;
+    incidentIds: string[];
+    data: UpdateIncidentRequest;
 }
 
 export interface PaginationMeta {
-  currentPage: number;
-  totalPages: number;
-  totalCount: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    limit: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
 }
 
 export interface IncidentsResponse {
-  incidents: Incident[];
-  pagination: PaginationMeta;
+    incidents: Incident[];
+    pagination: PaginationMeta;
 }

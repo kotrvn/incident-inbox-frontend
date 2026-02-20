@@ -6,131 +6,144 @@ import { IncidentDetailPage } from '../[id]';
 import { server } from '../../../mocks/server';
 
 vi.mock('../../../shared/utils/toaster', () => ({
-  toaster: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
+    toaster: {
+        success: vi.fn(),
+        error: vi.fn(),
+    },
 }));
 
-describe('Navigation', () => {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
-  afterEach(() => {
-    server.resetHandlers();
-    vi.clearAllMocks();
-  });
-  afterAll(() => server.close());
+describe('Навигация', () => {
+    beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
+    afterEach(() => {
+        server.resetHandlers();
+        vi.clearAllMocks();
+    });
+    afterAll(() => server.close());
 
-  it('загружает и отображает таблицу инцидентов', async () => {
-    render(<IncidentsPage />, {
-      initialEntries: ['/incidents'],
-      path: '/incidents',
+    it('Загружает и отображает таблицу инцидентов', async () => {
+        render(<IncidentsPage />, {
+            initialEntries: ['/incidents'],
+            path: '/incidents',
+        });
+
+        await waitFor(
+            () => {
+                expect(screen.getByRole('table')).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
+
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
+
+        const rows = screen.getAllByRole('row');
+        expect(rows.length).toBeGreaterThan(1);
     });
 
-    await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument();
-    }, { timeout: 5000 });
+    it('Отображает данные инцидентов в таблице', async () => {
+        render(<IncidentsPage />, {
+            initialEntries: ['/incidents'],
+            path: '/incidents',
+        });
 
-    // ✅ Проверяем инциденты, которые РЕАЛЬНО на первой странице
-    await waitFor(() => {
-      expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-    const rows = screen.getAllByRole('row');
-    // Заголовок + 10 строк данных
-    expect(rows.length).toBeGreaterThan(1);
-  });
-
-  it('отображает данные инцидентов в таблице', async () => {
-    render(<IncidentsPage />, {
-      initialEntries: ['/incidents'],
-      path: '/incidents',
+        const rows = screen.getAllByRole('row');
+        const dataRow = rows.find((row) => row.textContent?.includes('Забастовка на складе'));
+        expect(dataRow).toBeDefined();
+        expect(dataRow!.textContent).toContain('INC-015');
     });
 
-    // ✅ Ждём данные первой страницы — INC-015 первый по сортировке
-    await waitFor(() => {
-      expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    it('Отображает ссылку на детали инцидента с правильным href', async () => {
+        render(<IncidentsPage />, {
+            initialEntries: ['/incidents'],
+            path: '/incidents',
+        });
 
-    // Проверяем несколько инцидентов с первой страницы
-    const rows = screen.getAllByRole('row');
-    const dataRow = rows.find((row) => row.textContent?.includes('Забастовка на складе'));
-    expect(dataRow).toBeDefined();
-    expect(dataRow!.textContent).toContain('INC-015');
-  });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-  it('отображает ссылку на детали инцидента с правильным href', async () => {
-    render(<IncidentsPage />, {
-      initialEntries: ['/incidents'],
-      path: '/incidents',
+        const allLinks = screen.getAllByRole('link');
+        const incidentLink = allLinks.find(
+            (link) => link.getAttribute('href') === '/incidents/INC-015'
+        );
+
+        expect(incidentLink).toBeDefined();
+        expect(incidentLink).toHaveAttribute('href', '/incidents/INC-015');
     });
 
-    await waitFor(() => {
-      expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    it('Переходит на страницу деталей при клике на ID инцидента', async () => {
+        const user = userEvent.setup({ delay: null });
 
-    // ✅ Ищем ссылку на INC-015 — он точно на первой странице
-    const allLinks = screen.getAllByRole('link');
-    const incidentLink = allLinks.find(
-      (link) => link.getAttribute('href') === '/incidents/INC-015'
-    );
+        render(<IncidentsPage />, {
+            initialEntries: ['/incidents'],
+            routes: [
+                { path: '/incidents', element: <IncidentsPage /> },
+                { path: '/incidents/:id', element: <IncidentDetailPage /> },
+            ],
+        });
 
-    expect(incidentLink).toBeDefined();
-    expect(incidentLink).toHaveAttribute('href', '/incidents/INC-015');
-  });
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-  it('переходит на страницу деталей при клике на ID инцидента', async () => {
-    const user = userEvent.setup({ delay: null });
+        const allLinks = screen.getAllByRole('link');
+        const incidentLink = allLinks.find(
+            (link) => link.getAttribute('href') === '/incidents/INC-015'
+        );
+        expect(incidentLink).toBeDefined();
+        await user.click(incidentLink!);
 
-    render(<IncidentsPage />, {
-      initialEntries: ['/incidents'],
-      routes: [
-        { path: '/incidents', element: <IncidentsPage /> },
-        { path: '/incidents/:id', element: <IncidentDetailPage /> },
-      ],
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
+                expect(screen.getByText(/Лариса Козлова/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
     });
 
-    // ✅ Ждём данные первой страницы
-    await waitFor(() => {
-      expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
-    }, { timeout: 5000 });
+    it('Находит инцидент через поиск', async () => {
+        const user = userEvent.setup({ delay: null });
 
-    // ✅ Кликаем по ссылке INC-015
-    const allLinks = screen.getAllByRole('link');
-    const incidentLink = allLinks.find(
-      (link) => link.getAttribute('href') === '/incidents/INC-015'
-    );
-    expect(incidentLink).toBeDefined();
-    await user.click(incidentLink!);
+        render(<IncidentsPage />, {
+            initialEntries: ['/incidents'],
+            path: '/incidents',
+        });
 
-    // ✅ Проверяем детальную страницу INC-015
-    await waitFor(() => {
-      expect(screen.getByText(/Забастовка на складе/)).toBeInTheDocument();
-      expect(screen.getByText(/Лариса Козлова/)).toBeInTheDocument();
-    }, { timeout: 5000 });
-  });
+        await waitFor(
+            () => {
+                expect(screen.getByRole('table')).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
 
-  it('находит инцидент через поиск', async () => {
-    const user = userEvent.setup({ delay: null });
+        const searchInput = screen.getByPlaceholderText(/Поиск/);
+        await user.type(searchInput, 'Повреждённая посылка');
 
-    render(<IncidentsPage />, {
-      initialEntries: ['/incidents'],
-      path: '/incidents',
+        await waitFor(
+            () => {
+                expect(screen.getByText(/Повреждённая посылка при доставке/)).toBeInTheDocument();
+            },
+            { timeout: 5000 }
+        );
+
+        expect(screen.getByText(/Алексей Петров/)).toBeInTheDocument();
     });
-
-    // Ждём загрузки
-    await waitFor(() => {
-      expect(screen.getByRole('table')).toBeInTheDocument();
-    }, { timeout: 5000 });
-
-    // ✅ Ищем INC-001 через поиск — так он попадёт на страницу
-    const searchInput = screen.getByPlaceholderText(/Поиск/);
-    await user.type(searchInput, 'Повреждённая посылка');
-
-    // Ждём debounce (500ms) + загрузку
-    await waitFor(() => {
-      expect(screen.getByText(/Повреждённая посылка при доставке/)).toBeInTheDocument();
-    }, { timeout: 5000 });
-
-    expect(screen.getByText(/Алексей Петров/)).toBeInTheDocument();
-  });
 });
